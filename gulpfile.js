@@ -1,7 +1,3 @@
-/**
- layui构建
-*/
-
 var pkg = require('./package.json');
 
 var gulp = require('gulp');
@@ -28,7 +24,7 @@ var argv = require('minimist')(process.argv.slice(2), {
 ]
 
 //模块
-,mods = 'laytpl,laypage,laydate,jquery,layer,element,upload,form,tree,util,flow,layedit,code'
+,mods = 'jquery'
 
 //任务
 ,task = {
@@ -37,23 +33,19 @@ var argv = require('minimist')(process.argv.slice(2), {
   minjs: function(ver) {
     ver = ver === 'open';
      
-    //可指定模块压缩，eg：gulp minjs --mod layer,laytpl
+    //可指定模块压缩，eg：gulp minjs --mod 
     var mod = argv.mod ? function(){
       return '(' + argv.mod.replace(/,/g, '|') + ')';
     }() : ''
     ,src = [
       './src/**/*'+ mod +'.js'
       ,'!./src/**/mobile/*.js'
-      ,'!./src/lay/**/mobile.js'
-      ,'!./src/lay/all.js'
-      ,'!./src/lay/all-mobile.js'
+      ,'!./src/app/**/mobile.js'
+      ,'!./src/app/all.js'
+      ,'!./src/app/all-mobile.js'
     ]
-    ,dir = ver ? 'release' : 'build';
+    ,dir = ver ? 'release' : 'build';    
     
-    //过滤 layim
-    if(ver || argv.open){
-      src.push('!./src/lay/**/layim.js');
-    }
 
     return gulp.src(src).pipe(uglify())
      .pipe(header.apply(null, note))
@@ -61,44 +53,25 @@ var argv = require('minimist')(process.argv.slice(2), {
     
   }
   
-  //打包PC合并版JS，即包含layui.js和所有模块的合并
+  //打包PC合并版JS，即包含lwj.js和所有模块的合并
   ,alljs: function(ver){
     ver = ver === 'open';
     
     var src = [
-      './src/**/{layui,all,'+ mods +'}.js'
+      './src/**/{lwj,all,'+ mods +'}.js'
       ,'!./src/**/mobile/*.js'
     ]
     ,dir = ver ? 'release' : 'build';
     
     return gulp.src(src).pipe(uglify())
-      .pipe(concat('layui.all.js', {newLine: ''}))
+      .pipe(concat('lwj.all.js', {newLine: ''}))
       .pipe(header.apply(null, note))
-    .pipe(gulp.dest('./'+ dir +'/lay/dest/'));
+    .pipe(gulp.dest('./'+ dir +'/app/dest/'));
   }
   
   //打包mobile模块集合
   ,mobile: function(ver){
-    ver = ver === 'open';
-
-    var mods = 'layer-mobile,zepto,upload-mobile', src = [
-      './src/lay/all-mobile.js'
-      ,'./src/lay/modules/laytpl.js'
-      ,'./src/**/mobile/{'+ mods +'}.js'
-    ]
-    ,dir = ver ? 'release' : 'build';
     
-    if(ver || argv.open){
-      src.push('./src/**/mobile/layim-mobile-open.js'); 
-    }
-    
-    src.push((ver ? '!' : '') + './src/**/mobile/layim-mobile.js');
-    src.push('./src/lay/modules/mobile.js');
-    
-    return gulp.src(src).pipe(uglify())
-      .pipe(concat('mobile.js', {newLine: ''}))
-      .pipe(header.apply(null, note))
-    .pipe(gulp.dest('./'+ dir + '/lay/modules/'));
   }
   
   //压缩css文件
@@ -109,10 +82,7 @@ var argv = require('minimist')(process.argv.slice(2), {
     ,dir = ver ? 'release' : 'build'
     ,noteNew = JSON.parse(JSON.stringify(note));
     
-    if(ver || argv.open){
-      src.push('!./src/css/**/layim.css');
-    }
-    
+        
     noteNew[1].js = '';
     
     return gulp.src(src).pipe(minify({
@@ -139,10 +109,7 @@ var argv = require('minimist')(process.argv.slice(2), {
     var src = ['./src/**/*.{png,jpg,gif,html,mp3,json}']
     ,dir = ver ? 'release' : 'build';
     
-    if(ver || argv.open){
-      src.push('!./src/**/layim/**/*.*');
-    }
-    
+        
     gulp.src(src).pipe(rename({}))
     .pipe(gulp.dest('./'+ dir));
   }
@@ -171,16 +138,8 @@ gulp.task('default', ['clearRelease'], function(){ //命令：gulp
 });
 
 //完整任务
-gulp.task('all', ['clear'], function(){ //命令：gulp all，过滤layim：gulp all --open
+gulp.task('all', ['clear'], function(){ //命令：gulp all，过滤lwj：gulp all --open
   for(var key in task){
     task[key]();
   }
 });
-
-
-
-
-
-
-
-

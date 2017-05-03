@@ -18,10 +18,5 @@ node_modules/
 _site/
 run.bat
 dir.txt
-/**/layim/
-/**/layim.js
-/**/layim-mobile.js
-/**/layim.html
-/**/layim.m.html
 release/
 
