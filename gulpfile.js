@@ -24,7 +24,7 @@ var argv = require('minimist')(process.argv.slice(2), {
 ]
 
 //模块
-,mods = 'jquery'
+,mods = 'jquery,directive,box,form'
 
 //任务
 ,task = {
@@ -40,14 +40,12 @@ var argv = require('minimist')(process.argv.slice(2), {
     ,src = [
       './src/**/*'+ mod +'.js'
       ,'!./src/**/mobile/*.js'
-      ,'!./src/app/**/mobile.js'
-      ,'!./src/app/all.js'
-      ,'!./src/app/all-mobile.js'
     ]
     ,dir = ver ? 'release' : 'build';    
     
 
-    return gulp.src(src).pipe(uglify())
+    return gulp.src(src)
+    .pipe(uglify())
      .pipe(header.apply(null, note))
     .pipe(gulp.dest('./'+ dir));
     
@@ -63,7 +61,8 @@ var argv = require('minimist')(process.argv.slice(2), {
     ]
     ,dir = ver ? 'release' : 'build';
     
-    return gulp.src(src).pipe(uglify())
+    return gulp.src(src)
+    // .pipe(uglify())
       .pipe(concat('lwj.all.js', {newLine: ''}))
       .pipe(header.apply(null, note))
     .pipe(gulp.dest('./'+ dir +'/app/dest/'));
@@ -81,10 +80,7 @@ var argv = require('minimist')(process.argv.slice(2), {
     var src = ['./src/css/**/*.css']
     ,dir = ver ? 'release' : 'build'
     ,noteNew = JSON.parse(JSON.stringify(note));
-    
-        
     noteNew[1].js = '';
-    
     return gulp.src(src).pipe(minify({
       compatibility: 'ie7'
     })).pipe(header.apply(null, noteNew))
@@ -133,6 +129,7 @@ gulp.task('mv', task.mv);
 //开源版
 gulp.task('default', ['clearRelease'], function(){ //命令：gulp
   for(var key in task){
+    console.log(task[key]);
     task[key]('open');
   }
 });

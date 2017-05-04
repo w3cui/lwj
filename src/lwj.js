@@ -1,17 +1,15 @@
- 
 ;!function(win){
-  
 "use strict";
 
-var Lwj = function(){
-  this.v = ''; 
+var lwjui = function(){
+  this.v = '';
 };
 
-Lwj.fn = Lwj.prototype;
+lwjui.fn = lwjui.prototype;
 
-var doc = document, config = Lwj.fn.cache = {},
+var doc = document, config = lwjui.fn.cache = {},
 
-//获取lwj所在目录
+//获取lwjui所在目录
 getPath = function(){
   var js = doc.scripts, jsPath = js[js.length - 1].src;
   return jsPath.substring(0, jsPath.lastIndexOf('/') + 1);
@@ -19,18 +17,20 @@ getPath = function(){
 
 //异常提示
 error = function(msg){
-  win.console && console.error && console.error('lwj hint: ' + msg);
+  win.console && console.error && console.error('lwjui hint: ' + msg);
 },
 
 isOpera = typeof opera !== 'undefined' && opera.toString() === '[object Opera]',
 
 //内置模块
 modules = {
-  layer: 'modules/layer' //弹层
-  ,jquery: 'modules/jquery' //DOM库（第三方）
-  
-  ,mobile: '' //移动大模块 | 若当前为开发目录，则为移动模块入口，否则为移动模块集合
-};
+            layer: 'modules/layer' //弹层
+            ,jquery: 'modules/jquery' //DOM库（第三方）
+            ,directive: 'modules/directive' //指令插件
+            ,box: 'modules/box' //弹窗   
+            ,form: 'modules/form' //表单验证   
+            ,mobile: '' //移动大模块 | 若当前为开发目录，则为移动模块入口，否则为移动模块集合
+          };
 
 config.modules = {}; //记录模块物理路径
 config.status = {}; //记录模块加载状态
@@ -38,12 +38,12 @@ config.timeout = 10; //符合规范的模块请求最长等待秒数
 config.event = {}; //记录模块自定义事件
 
 //定义模块
-Lwj.fn.define = function(deps, callback){
+lwjui.fn.define = function(deps, callback){
   var that = this
   ,type = typeof deps === 'function'
   ,mods = function(){
     typeof callback === 'function' && callback(function(app, exports){
-      lwj[app] = exports;
+      lwjui[app] = exports;
       config.status[app] = true;
     });
     return this;
@@ -54,7 +54,7 @@ Lwj.fn.define = function(deps, callback){
     deps = []
   );
   
-  if(lwj['lwj.all'] || (!lwj['lwj.all'] && lwj['lwj.mobile'])){
+  if(lwjui['lwjui.all'] || (!lwjui['lwjui.all'] && lwjui['lwjui.mobile'])){
     return mods.call(that);
   }
   
@@ -63,7 +63,7 @@ Lwj.fn.define = function(deps, callback){
 };
 
 //使用特定模块
-Lwj.fn.use = function(apps, callback, exports){
+lwjui.fn.uses = function(apps, callback, exports){
   var that = this, dir = config.dir = config.dir ? config.dir : getPath;
   var head = doc.getElementsByTagName('head')[0];
 
@@ -76,7 +76,7 @@ Lwj.fn.use = function(apps, callback, exports){
         apps.splice(index, 1);
       }
     });
-    lwj.jquery = jQuery;
+    lwjui.jquery = jQuery;
   }
   
   var item = apps[0], timeout = 0;
@@ -86,8 +86,8 @@ Lwj.fn.use = function(apps, callback, exports){
   config.host = config.host || (dir.match(/\/\/([\s\S]+?)\//)||['//'+ location.host +'/'])[0];
   
   if(apps.length === 0 
-  || (lwj['lwj.all'] && modules[item]) 
-  || (!lwj['lwj.all'] && lwj['lwj.mobile'] && modules[item])
+  || (lwjui['lwjui.all'] && modules[item]) 
+  || (!lwjui['lwjui.all'] && lwjui['lwjui.mobile'] && modules[item])
   ){
     return onCallback(), that;
   }
@@ -98,6 +98,8 @@ Lwj.fn.use = function(apps, callback, exports){
     if (e.type === 'load' || (readyRegExp.test((e.currentTarget || e.srcElement).readyState))) {
       config.modules[item] = url;
       head.removeChild(node);
+      var addStatus = url.match(/\/([^\/\.]+)\.js/)[1];
+      config.status[item] = addStatus;
       (function poll() {
         if(++timeout > config.timeout * 1000 / 4){
           return error(item + ' is not a valid module');
@@ -109,7 +111,7 @@ Lwj.fn.use = function(apps, callback, exports){
 
   //加载模块
   var node = doc.createElement('script'), url =  (
-    modules[item] ? (dir + 'lay/') : (config.base || '')
+    modules[item] ? (dir + 'app/') : (config.base || '')
   ) + (that.modules[item] || item) + '.js';
   node.async = true;
   node.charset = 'utf-8';
@@ -147,10 +149,10 @@ Lwj.fn.use = function(apps, callback, exports){
   
   //回调
   function onCallback(){
-    exports.push(lwj[item]);
+    exports.push(lwjui[item]);
     apps.length > 1 ?
       that.use(apps.slice(1), callback, exports)
-    : ( typeof callback === 'function' && callback.apply(lwj, exports) );
+    : ( typeof callback === 'function' && callback.apply(lwjui, exports) );
   }
 
   return that;
@@ -158,18 +160,18 @@ Lwj.fn.use = function(apps, callback, exports){
 };
 
 //获取节点的style属性值
-Lwj.fn.getStyle = function(node, name){
+lwjui.fn.getStyle = function(node, name){
   var style = node.currentStyle ? node.currentStyle : win.getComputedStyle(node, null);
   return style[style.getPropertyValue ? 'getPropertyValue' : 'getAttribute'](name);
 };
 
 //css外部加载器
-Lwj.fn.link = function(href, fn, cssname){
+lwjui.fn.link = function(href, fn, cssname){
   var that = this, link = doc.createElement('link');
   var head = doc.getElementsByTagName('head')[0];
   if(typeof fn === 'string') cssname = fn;
   var app = (cssname || href).replace(/\.|\//g, '');
-  var id = link.id = 'lwjcss-'+app, timeout = 0;
+  var id = link.id = 'lwjuicss-'+app, timeout = 0;
   
   link.rel = 'stylesheet';
   link.href = href + (config.debug ? '?v='+new Date().getTime() : '');
@@ -195,12 +197,12 @@ Lwj.fn.link = function(href, fn, cssname){
 };
 
 //css内部加载器
-Lwj.fn.addcss = function(firename, fn, cssname){
-  return lwj.link(config.dir + 'css/' + firename, fn, cssname);
+lwjui.fn.addcss = function(firename, fn, cssname){
+  return lwjui.link(config.dir + 'css/' + firename, fn, cssname);
 };
 
 //图片预加载
-Lwj.fn.img = function(url, callback, error) {   
+lwjui.fn.img = function(url, callback, error) {   
   var img = new Image();
   img.src = url; 
   if(img.complete){
@@ -217,7 +219,7 @@ Lwj.fn.img = function(url, callback, error) {
 };
 
 //全局配置
-Lwj.fn.config = function(options){
+lwjui.fn.config = function(options){
   options = options || {};
   for(var key in options){
     config[key] = options[key];
@@ -226,7 +228,7 @@ Lwj.fn.config = function(options){
 };
 
 //记录全部模块
-Lwj.fn.modules = function(){
+lwjui.fn.modules = function(){
   var clone = {};
   for(var o in modules){
     clone[o] = modules[o];
@@ -235,7 +237,7 @@ Lwj.fn.modules = function(){
 }();
 
 //拓展模块
-Lwj.fn.extend = function(options){
+lwjui.fn.extend = function(options){
   var that = this;
 
   //验证模块是否被占用
@@ -253,8 +255,8 @@ Lwj.fn.extend = function(options){
 
 
 //本地存储
-Lwj.fn.data = function(table, settings){
-  table = table || 'lwj';
+lwjui.fn.data = function(table, settings){
+  table = table || 'lwjui';
   
   if(!win.JSON || !win.JSON.parse) return;
   
@@ -281,7 +283,7 @@ Lwj.fn.data = function(table, settings){
 };
 
 //设备信息
-Lwj.fn.device = function(key){
+lwjui.fn.device = function(key){
   var agent = navigator.userAgent.toLowerCase();
 
   //获取版本号
@@ -324,14 +326,14 @@ Lwj.fn.device = function(key){
 };
 
 //提示
-Lwj.fn.hint = function(){
+lwjui.fn.hint = function(){
   return {
     error: error
   }
 };
 
 //遍历
-Lwj.fn.each = function(obj, fn){
+lwjui.fn.each = function(obj, fn){
   var that = this, key;
   if(typeof fn !== 'function') return that;
   obj = obj || [];
@@ -348,13 +350,13 @@ Lwj.fn.each = function(obj, fn){
 };
 
 //阻止事件冒泡
-Lwj.fn.stope = function(e){
+lwjui.fn.stope = function(e){
   e = e || win.event;
   e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
 };
 
 //自定义模块事件
-Lwj.fn.onevent = function(modName, events, callback){
+lwjui.fn.onevent = function(modName, events, callback){
   if(typeof modName !== 'string' 
   || typeof callback !== 'function') return this;
   config.event[modName + '.' + events] = [callback];
@@ -363,19 +365,86 @@ Lwj.fn.onevent = function(modName, events, callback){
 };
 
 //执行自定义模块事件
-Lwj.fn.event = function(modName, events, params){
+lwjui.fn.event = function(modName, events, params){
   var that = this, result = null, filter = events.match(/\(.*\)$/)||[]; //提取事件过滤器
   var set = (events = modName + '.'+ events).replace(filter, ''); //获取事件本体名
   var callback = function(_, item){
     var res = item && item.call(that, params);
     res === false && result === null && (result = false);
   };
-  lwj.each(config.event[set], callback);
-  filter[0] && lwj.each(config.event[events], callback); //执行过滤器中的事件
+  lwjui.each(config.event[set], callback);
+  filter[0] && lwjui.each(config.event[events], callback); //执行过滤器中的事件
   return result;
 };
 
-win.lwj = new Lay();
+// 构建指令逻辑
+lwjui.fn.directive = function(dirName,events){
+  var events=events(),$this = this,result = {},isUses = 0;
+  result.init = function(_$this,callback){  
+    var _$scope={};  
+    _$scope.element = _$this;
+    if(_$scope.element.length == 0){return $this;}
+    for(var key in events){
+       this.isType(key,events[key],_$scope,callback);
+    }    
+  };
+  result.isType = function($type,$value,_$scope,callback){
+    switch($type){
+      // 模板
+      case "template":
+        _$scope.template = $value;
+      break;
+      // 需要加载的模块
+      case "uses":
+        isUses = 1;
+        $this.uses($value,function(){
+          isUses = 2;
+        });
+      break;
+      // 获取参数
+      case "scope":
+        _$scope.scope = {};
+        for(var key in $value){          
+          _$scope.scope[key] = this.isScope(key,$value[key],_$scope);
+        }
+      break;
+      // 获取参数
+      case "link":
+        setTimeout(function(){
+          if(isUses === 1 || isUses === 2 ){
+            var set = setInterval(function(){
+              if(isUses === 2){
+                clearInterval(set);
+                callback(_$scope);
+              }
+            },100);
+          }
+        },100);
+      break;
+      // 未知参数
+      default:
+      error($type + "未知参数！");
+    }
 
+  };
+  result.isScope = function($key,$value,_$scope){    
+    switch($value[0]){
+      case "=":        
+        return eval("("+valAttr(_$scope.element,$value.substr(1))+")");
+      break;
+      default:
+        return valAttr(_$scope.element,$value);
+    }
+    function valAttr(_$this,_$value){
+        return _$this.attr(_$value) ? _$this.attr(_$value) :
+               _$this.data(_$value);
+    };
+  };
+  $.each($("*["+dirName+"]"), function(index, val) {
+     result.init($(this),events.link);
+  });  
+  return this;
+};
+win.lwjui = new lwjui();
 }(window);
 

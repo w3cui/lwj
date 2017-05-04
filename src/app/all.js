@@ -1,8 +1,8 @@
 ﻿
-layui.define(function(exports){
-  var cache = layui.cache;
-  layui.config({
-    dir: cache.dir.replace(/lay\/dest\/$/, '')
+lwjui.define(function(exports){
+  var cache = lwjui.cache;
+  lwjui.config({
+    dir: cache.dir.replace(/app\/dest\/$/, '')
   });
-  exports('layui.all', layui.v);
+  exports('lwjui.all', lwjui.v);
 });

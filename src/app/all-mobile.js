@@ -1,11 +1,4 @@
-﻿/**
-
- @Name：用于打包移动完整版
- @Author：贤心
- @License：LGPL
-    
- */
- 
-layui.define(function(exports){
-  exports('layui.mobile', layui.v);
+﻿
+lwjui.define(function(exports){
+  exports('lwjui.mobile', lwjui.v);
 });
