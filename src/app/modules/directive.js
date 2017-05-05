@@ -2,8 +2,8 @@
 
 	lwjui.directive('ui-layer', function () {
 		return {	
-			template:"<div>我是第一个组件：</div>",
-			uses:"box",
+			template:"<div ui-attr >我是第一个组件：</div>",
+			uses:["box"],
 			scope:{
                 string: 'selecteda',
                 object: '=list',
@@ -11,10 +11,11 @@
 			link: function (el) {
 				var scope = el.scope;
 				var tpl = $(el.template).append("（我是属性值："+scope.string+")");
-				el.element.html(tpl);
+				el.element.append(tpl);
 			}
 		};
-	}).directive('ui-attr', function () {
+	})
+	.directive('ui-attr', function () {
 		return {
 			template:"<div>我是第二个组件：</div>",	
 			uses:"form",
@@ -23,9 +24,10 @@
                 object: '=list',
             },
 			link: function (el) {
+
 				var scope = el.scope;
 				var tpl = $(el.template).append("（我是属性值："+scope.string+")");
-				el.element.html(tpl);
+				el.element.append(tpl);
 			}
 		};
 	});

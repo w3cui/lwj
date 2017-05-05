@@ -2,7 +2,7 @@
   "name": "lwj",
   "version": "",
   "description": "",
-  "main": "lwj.js",
+  "main": "src/lwj.js",
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

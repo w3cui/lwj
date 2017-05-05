@@ -9,13 +9,15 @@
 </style>
 </head>
 <body>
-  <div ui-layer list="{b:2,a:1}" selecteda ="layer01"></div>
+  <button onclick="lwjui.init('directive')">重新绑定事件</button>
+  <hr>
+  <div ui-layer data-list="{b:2,a:1}" data-selecteda ="layer01"></div>
   <div ui-layer list="{b:2,a:1}" selecteda ="layer02"></div>
   <div ui-attr list="{b:2,a:1}" selecteda ="attr01"></div>
 </body>
 </html>
 <script type="text/javascript"  src="http://cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
-<script src="../src/lwj.js"></script>
+<script src="../release/lwj.js"></script>
 <script>
 lwjui.uses(['directive']);
 </script>

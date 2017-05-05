@@ -22,8 +22,9 @@ error = function(msg){
 
 isOpera = typeof opera !== 'undefined' && opera.toString() === '[object Opera]',
 
+
 //内置模块
-modules = {
+modules = typeof modsConfig == "function" ? moduleUrl.moduleUrl : {
             layer: 'modules/layer' //弹层
             ,jquery: 'modules/jquery' //DOM库（第三方）
             ,directive: 'modules/directive' //指令插件
@@ -36,6 +37,7 @@ config.modules = {}; //记录模块物理路径
 config.status = {}; //记录模块加载状态
 config.timeout = 10; //符合规范的模块请求最长等待秒数
 config.event = {}; //记录模块自定义事件
+config.directive = {}; //记录所有directive指令
 
 //定义模块
 lwjui.fn.define = function(deps, callback){
@@ -58,11 +60,11 @@ lwjui.fn.define = function(deps, callback){
     return mods.call(that);
   }
   
-  that.use(deps, mods);
+  that.uses(deps, mods);
   return that;
 };
 
-//使用特定模块
+/* 使用特定模块 */
 lwjui.fn.uses = function(apps, callback, exports){
   var that = this, dir = config.dir = config.dir ? config.dir : getPath;
   var head = doc.getElementsByTagName('head')[0];
@@ -151,7 +153,7 @@ lwjui.fn.uses = function(apps, callback, exports){
   function onCallback(){
     exports.push(lwjui[item]);
     apps.length > 1 ?
-      that.use(apps.slice(1), callback, exports)
+      that.uses(apps.slice(1), callback, exports)
     : ( typeof callback === 'function' && callback.apply(lwjui, exports) );
   }
 
@@ -379,7 +381,9 @@ lwjui.fn.event = function(modName, events, params){
 
 // 构建指令逻辑
 lwjui.fn.directive = function(dirName,events){
-  var events=events(),$this = this,result = {},isUses = 0;
+  // 记录 注册事件 directive
+  config.directive[dirName] = !config.directive[dirName] ? events : config.directive[dirName];
+  var events=events(),$this = this,result = {},isUses = 0;  
   result.init = function(_$this,callback){  
     var _$scope={};  
     _$scope.element = _$this;
@@ -444,6 +448,20 @@ lwjui.fn.directive = function(dirName,events){
      result.init($(this),events.link);
   });  
   return this;
+};
+// 重新绑定directive
+lwjui.fn.init = function($name){
+    switch($name){
+      case "directive":
+          for(var key in config.directive){
+            this.directive(key,config.directive[key]);
+          } 
+      break;
+      default:
+        for(var key in config.directive){
+          this.directive(key,config.directive[key]);
+        }
+    };
 };
 win.lwjui = new lwjui();
 }(window);

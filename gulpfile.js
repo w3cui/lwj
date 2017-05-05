@@ -1,4 +1,5 @@
 var pkg = require('./package.json');
+var config = require('./config.json');
 
 var gulp = require('gulp');
 var uglify = require('gulp-uglify');
@@ -9,7 +10,6 @@ var header = require('gulp-header');
 var del = require('del');
 var gulpif = require('gulp-if');
 var minimist = require('minimist');
-
 //获取参数
 var argv = require('minimist')(process.argv.slice(2), {
   default: {
@@ -20,11 +20,11 @@ var argv = require('minimist')(process.argv.slice(2), {
 //注释
 ,note = [
   '/** <%= pkg.name %>-v<%= pkg.version %> <%= pkg.license %> License By <%= pkg.homepage %> */\n <%= js %>'
-  ,{pkg: pkg, js: ';'}
+  ,{pkg: pkg, js: "var modsConfig = "+JSON.stringify(config)+";"}
 ]
 
 //模块
-,mods = 'jquery,directive,box,form'
+,mods = config.moduleType
 
 //任务
 ,task = {
@@ -54,7 +54,7 @@ var argv = require('minimist')(process.argv.slice(2), {
   //打包PC合并版JS，即包含lwj.js和所有模块的合并
   ,alljs: function(ver){
     ver = ver === 'open';
-    
+    console.log(config);
     var src = [
       './src/**/{lwj,all,'+ mods +'}.js'
       ,'!./src/**/mobile/*.js'
