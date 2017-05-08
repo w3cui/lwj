@@ -1,2 +1,93 @@
 /** lwj-v MIT License By  */
- ;!function(e){"use strict";var t=function(){this.v=""};t.fn=t.prototype;var n=document,r=t.fn.cache={},o=function(){var e=n.scripts,t=e[e.length-1].src;return t.substring(0,t.lastIndexOf("/")+1)}(),i=function(t){e.console&&console.error&&console.error("lwjui hint: "+t)},u="undefined"!=typeof opera&&"[object Opera]"===opera.toString(),a={layer:"modules/layer",jquery:"modules/jquery",directive:"modules/directive",mobile:""};r.modules={},r.status={},r.timeout=10,r.event={},t.fn.define=function(e,n){var o=this,i="function"==typeof e,u=function(){return"function"==typeof n&&n(function(e,n){t[e]=n,r.status[e]=!0}),this};return i&&(n=e,e=[]),t["lwjui.all"]||!t["lwjui.all"]&&t["lwjui.mobile"]?u.call(o):(o.use(e,u),o)},t.fn.uses=function(e,l,c){function s(e,t){var n="PLaySTATION 3"===navigator.platform?/^complete$/:/^(complete|loaded)$/;if("load"===e.type||n.test((e.currentTarget||e.srcElement).readyState)){r.modules[p]=t,m.removeChild(y);var o=t.match(/\/([^\/\.]+)\.js/)[1];r.status[p]=o,function u(){return++h>1e3*r.timeout/4?i(p+" is not a valid module"):void(r.status[p]?f():setTimeout(u,4))}()}}function f(){c.push(t[p]),e.length>1?d.use(e.slice(1),l,c):"function"==typeof l&&l.apply(t,c)}var d=this,v=r.dir=r.dir?r.dir:o,m=n.getElementsByTagName("head")[0];e="string"==typeof e?[e]:e,window.jQuery&&jQuery.fn.on&&(d.each(e,function(t,n){"jquery"===n&&e.splice(t,1)}),t.jquery=jQuery);var p=e[0],h=0;if(c=c||[],r.host=r.host||(v.match(/\/\/([\s\S]+?)\//)||["//"+location.host+"/"])[0],0===e.length||t["lwjui.all"]&&a[p]||!t["lwjui.all"]&&t["lwjui.mobile"]&&a[p])return f(),d;var y=n.createElement("script"),g=(a[p]?v+"app/":r.base||"")+(d.modules[p]||p)+".js";return y.async=!0,y.charset="utf-8",y.src=g+function(){var e=r.version===!0?r.v||(new Date).getTime():r.version||"";return e?"?v="+e:""}(),r.modules[p]?!function w(){return++h>1e3*r.timeout/4?i(p+" is not a valid module"):void("string"==typeof r.modules[p]&&r.status[p]?f():setTimeout(w,4))}():(m.appendChild(y),!y.attachEvent||y.attachEvent.toString&&y.attachEvent.toString().indexOf("[native code")<0||u?y.addEventListener("load",function(e){s(e,g)},!1):y.attachEvent("onreadystatechange",function(e){s(e,g)})),r.modules[p]=g,d},t.fn.getStyle=function(t,n){var r=t.currentStyle?t.currentStyle:e.getComputedStyle(t,null);return r[r.getPropertyValue?"getPropertyValue":"getAttribute"](n)},t.fn.link=function(e,t,o){var u=this,a=n.createElement("link"),l=n.getElementsByTagName("head")[0];"string"==typeof t&&(o=t);var c=(o||e).replace(/\.|\//g,""),s=a.id="lwjuicss-"+c,f=0;return a.rel="stylesheet",a.href=e+(r.debug?"?v="+(new Date).getTime():""),a.media="all",n.getElementById(s)||l.appendChild(a),"function"!=typeof t?u:(function d(){return++f>1e3*r.timeout/100?i(e+" timeout"):void(1989===parseInt(u.getStyle(n.getElementById(s),"width"))?function(){t()}():setTimeout(d,100))}(),u)},t.fn.addcss=function(e,n,o){return t.link(r.dir+"css/"+e,n,o)},t.fn.img=function(e,t,n){var r=new Image;return r.src=e,r.complete?t(r):(r.onload=function(){r.onload=null,t(r)},void(r.onerror=function(e){r.onerror=null,n(e)}))},t.fn.config=function(e){e=e||{};for(var t in e)r[t]=e[t];return this},t.fn.modules=function(){var e={};for(var t in a)e[t]=a[t];return e}(),t.fn.extend=function(e){var t=this;e=e||{};for(var n in e)t[n]||t.modules[n]?i("模块名 "+n+" 已被占用"):t.modules[n]=e[n];return t},t.fn.data=function(t,n){if(t=t||"lwjui",e.JSON&&e.JSON.parse){if(null===n)return delete localStorage[t];n="object"==typeof n?n:{key:n};try{var r=JSON.parse(localStorage[t])}catch(o){var r={}}return n.value&&(r[n.key]=n.value),n.remove&&delete r[n.key],localStorage[t]=JSON.stringify(r),n.key?r[n.key]:r}},t.fn.device=function(t){var n=navigator.userAgent.toLowerCase(),r=function(e){var t=new RegExp(e+"/([^\\s\\_\\-]+)");return e=(n.match(t)||[])[1],e||!1},o={os:function(){return/windows/.test(n)?"windows":/linux/.test(n)?"linux":/mac/.test(n)?"mac":/iphone|ipod|ipad|ios/.test(n)?"ios":void 0}(),ie:function(){return!!(e.ActiveXObject||"ActiveXObject"in e)&&((n.match(/msie\s(\d+)/)||[])[1]||"11")}(),weixin:r("micromessenger")};return t&&!o[t]&&(o[t]=r(t)),o.android=/android/.test(n),o.ios="ios"===o.os,o},t.fn.hint=function(){return{error:i}},t.fn.each=function(e,t){var n,r=this;if("function"!=typeof t)return r;if(e=e||[],e.constructor===Object){for(n in e)if(t.call(e[n],n,e[n]))break}else for(n=0;n<e.length&&!t.call(e[n],n,e[n]);n++);return r},t.fn.stope=function(t){t=t||e.event,t.stopPropagation?t.stopPropagation():t.cancelBubble=!0},t.fn.onevent=function(e,t,n){return"string"!=typeof e||"function"!=typeof n?this:(r.event[e+"."+t]=[n],this)},t.fn.event=function(e,n,o){var i=this,u=null,a=n.match(/\(.*\)$/)||[],l=(n=e+"."+n).replace(a,""),c=function(e,t){var n=t&&t.call(i,o);n===!1&&null===u&&(u=!1)};return t.each(r.event[l],c),a[0]&&t.each(r.event[n],c),u},e.lwjui=new t}(window);
+ ;!function(win){"use strict";var lwjui=function(){this.v=""};lwjui.fn=lwjui.prototype;var doc=document,config=lwjui.fn.cache={},
+//获取lwjui所在目录
+getPath=function(){var js=doc.scripts,jsPath=js[js.length-1].src;return jsPath.substring(0,jsPath.lastIndexOf("/")+1)}(),
+//异常提示
+error=function(msg){win.console&&console.error&&console.error("lwjui hint: "+msg)},isOpera=typeof opera!=="undefined"&&opera.toString()==="[object Opera]",
+//内置模块
+modules=typeof modsConfig=="object"?modsConfig.moduleUrl:{layer:"modules/layer",//弹层
+jquery:"modules/jquery",//DOM库（第三方）
+directive:"modules/directive",//指令插件
+box:"modules/box",//弹窗   
+form:"modules/form",//表单验证   
+mobile:""};config.modules={};//记录模块物理路径
+config.status={};//记录模块加载状态
+config.timeout=10;//符合规范的模块请求最长等待秒数
+config.event={};//记录模块自定义事件
+config.directive={};//记录所有directive指令
+//定义模块
+lwjui.fn.define=function(deps,callback){var that=this,type=typeof deps==="function",mods=function(){typeof callback==="function"&&callback(function(app,exports){lwjui[app]=exports;config.status[app]=true});return this};type&&(callback=deps,deps=[]);if(lwjui["lwjui.all"]||!lwjui["lwjui.all"]&&lwjui["lwjui.mobile"]){return mods.call(that)}that.uses(deps,mods);return that};/* 使用特定模块 */
+lwjui.fn.uses=function(apps,callback,exports){var that=this,dir=config.dir=config.dir?config.dir:getPath;var head=doc.getElementsByTagName("head")[0];apps=typeof apps==="string"?[apps]:apps;
+//如果页面已经存在jQuery1.7+库且所定义的模块依赖jQuery，则不加载内部jquery模块
+if(window.jQuery&&jQuery.fn.on){that.each(apps,function(index,item){if(item==="jquery"){apps.splice(index,1)}});lwjui.jquery=jQuery}var item=apps[0],timeout=0;exports=exports||[];
+//静态资源host
+config.host=config.host||(dir.match(/\/\/([\s\S]+?)\//)||["//"+location.host+"/"])[0];if(apps.length===0||lwjui["lwjui.all"]&&modules[item]||!lwjui["lwjui.all"]&&lwjui["lwjui.mobile"]&&modules[item]){return onCallback(),that}
+//加载完毕
+function onScriptLoad(e,url){var readyRegExp=navigator.platform==="PLaySTATION 3"?/^complete$/:/^(complete|loaded)$/;if(e.type==="load"||readyRegExp.test((e.currentTarget||e.srcElement).readyState)){config.modules[item]=url;head.removeChild(node);var addStatus=url.match(/\/([^\/\.]+)\.js/)[1];config.status[item]=addStatus;(function poll(){if(++timeout>config.timeout*1e3/4){return error(item+" is not a valid module")}config.status[item]?onCallback():setTimeout(poll,4)})()}}
+//加载模块
+var node=doc.createElement("script"),url=(modules[item]?dir+"js/":config.base||"")+(that.modules[item]||item)+".js";node.async=true;node.charset="utf-8";node.src=url+function(){var version=config.version===true?config.v||(new Date).getTime():config.version||"";return version?"?v="+version:""}();
+//首次加载
+if(!config.modules[item]){head.appendChild(node);if(node.attachEvent&&!(node.attachEvent.toString&&node.attachEvent.toString().indexOf("[native code")<0)&&!isOpera){node.attachEvent("onreadystatechange",function(e){onScriptLoad(e,url)})}else{node.addEventListener("load",function(e){onScriptLoad(e,url)},false)}}else{(function poll(){if(++timeout>config.timeout*1e3/4){return error(item+" is not a valid module")}typeof config.modules[item]==="string"&&config.status[item]?onCallback():setTimeout(poll,4)})()}config.modules[item]=url;
+//回调
+function onCallback(){exports.push(lwjui[item]);apps.length>1?that.uses(apps.slice(1),callback,exports):typeof callback==="function"&&callback.apply(lwjui,exports)}return that};
+//获取节点的style属性值
+lwjui.fn.getStyle=function(node,name){var style=node.currentStyle?node.currentStyle:win.getComputedStyle(node,null);return style[style.getPropertyValue?"getPropertyValue":"getAttribute"](name)};
+//css外部加载器
+lwjui.fn.link=function(href,fn,cssname){var that=this,link=doc.createElement("link");var head=doc.getElementsByTagName("head")[0];if(typeof fn==="string")cssname=fn;var app=(cssname||href).replace(/\.|\//g,"");var id=link.id="lwjuicss-"+app,timeout=0;link.rel="stylesheet";link.href=href+(config.debug?"?v="+(new Date).getTime():"");link.media="all";if(!doc.getElementById(id)){head.appendChild(link)}if(typeof fn!=="function")return that;
+//轮询css是否加载完毕
+(function poll(){if(++timeout>config.timeout*1e3/100){return error(href+" timeout")}parseInt(that.getStyle(doc.getElementById(id),"width"))===1989?function(){fn()}():setTimeout(poll,100)})();return that};
+//css内部加载器
+lwjui.fn.addcss=function(firename,fn,cssname){return lwjui.link(config.dir+"css/"+firename,fn,cssname)};
+//图片预加载
+lwjui.fn.img=function(url,callback,error){var img=new Image;img.src=url;if(img.complete){return callback(img)}img.onload=function(){img.onload=null;callback(img)};img.onerror=function(e){img.onerror=null;error(e)}};
+//全局配置
+lwjui.fn.config=function(options){options=options||{};for(var key in options){config[key]=options[key]}return this};
+//记录全部模块
+lwjui.fn.modules=function(){var clone={};for(var o in modules){clone[o]=modules[o]}return clone}();
+//拓展模块
+lwjui.fn.extend=function(options){var that=this;
+//验证模块是否被占用
+options=options||{};for(var o in options){if(that[o]||that.modules[o]){error("模块名 "+o+" 已被占用")}else{that.modules[o]=options[o]}}return that};
+//本地存储
+lwjui.fn.data=function(table,settings){table=table||"lwjui";if(!win.JSON||!win.JSON.parse)return;
+//如果settings为null，则删除表
+if(settings===null){return delete localStorage[table]}settings=typeof settings==="object"?settings:{key:settings};try{var data=JSON.parse(localStorage[table])}catch(e){var data={}}if(settings.value)data[settings.key]=settings.value;if(settings.remove)delete data[settings.key];localStorage[table]=JSON.stringify(data);return settings.key?data[settings.key]:data};
+//设备信息
+lwjui.fn.device=function(key){var agent=navigator.userAgent.toLowerCase();
+//获取版本号
+var getVersion=function(label){var exp=new RegExp(label+"/([^\\s\\_\\-]+)");label=(agent.match(exp)||[])[1];return label||false};var result={os:function(){//底层操作系统
+if(/windows/.test(agent)){return"windows"}else if(/linux/.test(agent)){return"linux"}else if(/mac/.test(agent)){return"mac"}else if(/iphone|ipod|ipad|ios/.test(agent)){return"ios"}}(),ie:function(){//ie版本
+return!!win.ActiveXObject||"ActiveXObject"in win?(agent.match(/msie\s(\d+)/)||[])[1]||"11":false}(),weixin:getVersion("micromessenger")};
+//任意的key
+if(key&&!result[key]){result[key]=getVersion(key)}
+//移动设备
+result.android=/android/.test(agent);result.ios=result.os==="ios";return result};
+//提示
+lwjui.fn.hint=function(){return{error:error}};
+//遍历
+lwjui.fn.each=function(obj,fn){var that=this,key;if(typeof fn!=="function")return that;obj=obj||[];if(obj.constructor===Object){for(key in obj){if(fn.call(obj[key],key,obj[key]))break}}else{for(key=0;key<obj.length;key++){if(fn.call(obj[key],key,obj[key]))break}}return that};
+//阻止事件冒泡
+lwjui.fn.stope=function(e){e=e||win.event;e.stopPropagation?e.stopPropagation():e.cancelBubble=true};
+//自定义模块事件
+lwjui.fn.onevent=function(modName,events,callback){if(typeof modName!=="string"||typeof callback!=="function")return this;config.event[modName+"."+events]=[callback];return this};
+//执行自定义模块事件
+lwjui.fn.event=function(modName,events,params){var that=this,result=null,filter=events.match(/\(.*\)$/)||[];//提取事件过滤器
+var set=(events=modName+"."+events).replace(filter,"");//获取事件本体名
+var callback=function(_,item){var res=item&&item.call(that,params);res===false&&result===null&&(result=false)};lwjui.each(config.event[set],callback);filter[0]&&lwjui.each(config.event[events],callback);//执行过滤器中的事件
+return result};
+// 构建指令逻辑
+lwjui.fn.directive=function(dirName,events){
+// 记录 注册事件 directive
+config.directive[dirName]=!config.directive[dirName]?events:config.directive[dirName];var events=events(),$this=this,result={},isUses=0;result.init=function(_$this,callback){var _$scope={};_$scope.element=_$this;if(_$scope.element.length==0){return $this}for(var key in events){this.isType(key,events[key],_$scope,callback)}};result.isType=function($type,$value,_$scope,callback){switch($type){
+// 模板
+case"template":_$scope.template=$value;break;
+// 需要加载的模块
+case"uses":isUses=1;$this.uses($value,function(){isUses=2});break;
+// 获取参数
+case"scope":_$scope.scope={};for(var key in $value){_$scope.scope[key]=this.isScope(key,$value[key],_$scope)}break;
+// 获取参数
+case"link":setTimeout(function(){if(isUses===1||isUses===2){var set=setInterval(function(){if(isUses===2){clearInterval(set);callback(_$scope)}},100)}},100);break;
+// 未知参数
+default:error($type+"未知参数！")}};result.isScope=function($key,$value,_$scope){switch($value[0]){case"=":return eval("("+valAttr(_$scope.element,$value.substr(1))+")");break;default:return valAttr(_$scope.element,$value)}function valAttr(_$this,_$value){return _$this.attr(_$value)?_$this.attr(_$value):_$this.data(_$value)}};$.each($("*["+dirName+"]"),function(index,val){result.init($(this),events.link)});return this};
+// 重新绑定directive
+lwjui.fn.init=function($name){switch($name){case"directive":for(var key in config.directive){this.directive(key,config.directive[key])}break;default:for(var key in config.directive){this.directive(key,config.directive[key])}}};win.lwjui=new lwjui}(window);
