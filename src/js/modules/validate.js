@@ -1,5 +1,5 @@
 !(function(win,lwjui){
-	lwjui.form = (function($form){
+	lwjui.validate = (function($form){
 		$form.init = "";
 		$form.isDate = "";
 		return $form;

@@ -33,7 +33,7 @@
 
       box: 'modules/box', //弹窗   
 
-      form: 'modules/form', //表单验证   
+      validate: 'modules/validate', //表单验证   
 
       mobile: '' //移动大模块 | 若当前为开发目录，则为移动模块入口，否则为移动模块集合
     };
@@ -104,7 +104,7 @@
       if (e.type === 'load' || (readyRegExp.test((e.currentTarget || e.srcElement).readyState))) {
         config.modules[item] = url;
         head.removeChild(node);
-        var addStatus = url.match(/\/([^\/\.]+)\.js/)[1];
+        var addStatus = url.match(/\/([^\/]+)\.js/)[1];
         config.status[item] = addStatus;
         (function poll() {
           if (++timeout > config.timeout * 1000 / 4) {
@@ -115,11 +115,11 @@
       }
     }
 
-    //加载模块str.
+    //加载模块 str.substr(0, 4)
     var node = doc.createElement('script'),
       url = (
         modules[item] ? (dir + 'js/') : (config.base || '')
-      ) + (that.modules[item] || item) + ( item.match(/.*\.js.*/) ? "" : '.js' );
+      ) + (that.modules[item] || (item.substr(0, 4)=="http" ? item :  dir + item) ) + ( item.match(/.*\.js.*/) ? "" : '.js' );
     node.async = true;
     node.charset = 'utf-8';
     node.src = url + function() {
@@ -197,7 +197,7 @@
       if (++timeout > config.timeout * 1000 / 100) {
         return error(href + ' timeout');
       };
-      parseInt(that.getStyle(doc.getElementById(id), 'width')) === 1989 ? function() {
+      doc.getElementById(id) ? function() {
         fn();
       }() : setTimeout(poll, 100);
     }());
@@ -402,6 +402,7 @@
       isUses = 0;
     result.init = function(_$this, callback) {
       var _$scope = {};
+      _$scope.fn = $this;
       _$scope.element = _$this;
       if (_$scope.element.length == 0) {
         return $this;
@@ -427,7 +428,6 @@
         case "addcss":
           isUses = 1;
           $this.addcss($value, function(){
-            console.log(aaa);
             isUses = 2;
           }, $value)
 
