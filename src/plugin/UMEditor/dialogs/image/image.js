@@ -413,7 +413,7 @@
         initContent: function (editor, $dialog) {
             var lang = editor.getLang('image')["static"],
                 opt = $.extend({}, lang, {
-                    image_url: UMEDITOR_CONFIG.UMEDITOR_HOME_URL + 'dialogs/imgage/'
+                    image_url: UMEDITOR_CONFIG.UMEDITOR_HOME_URL + 'dialogs/image/'
                 });
 
             Upload.showCount = 0;

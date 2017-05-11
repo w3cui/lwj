@@ -35,7 +35,7 @@ var argv = require('minimist')(process.argv.slice(2), {
   '/** <%= pkg.name %>-v<%= pkg.version %> <%= pkg.license %> License By <%= pkg.homepage %> */\n <%= js %>', {
     pkg: pkg,
     // js: "var modsConfig = " + JSON.stringify(config) + ";"
-    js: ";"
+    js: ""
   }
 ]
 
@@ -113,14 +113,14 @@ var argv = require('minimist')(process.argv.slice(2), {
   mincss: function(ver) {
     ver = ver === 'open';
 
-    var src = ['./src/css/**/*.css'],
+    var src = ['./src/**/*.css'],
       dir = ver ? 'release' : 'build',
       noteNew = JSON.parse(JSON.stringify(note));
     noteNew[1].js = '';
     return gulp.src(src).pipe(minify({
         compatibility: 'ie7'
       })).pipe(header.apply(null, noteNew))
-      .pipe(gulp.dest('./' + dir + '/css'));
+      .pipe(gulp.dest('./' + dir + '/'));
   }
 
   //复制iconfont文件
@@ -140,7 +140,7 @@ var argv = require('minimist')(process.argv.slice(2), {
   mv: function(ver) {
     ver = ver === 'open';
 
-    var src = ['./src/**/*.{png,jpg,gif,html,mp3,json}'],
+    var src = ['./src/**/*.{png,jpg,gif,html,mp3,json,svg}'],
       dir = ver ? 'release' : 'build';
 
 

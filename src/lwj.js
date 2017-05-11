@@ -35,6 +35,8 @@
 
       validate: 'modules/validate', //表单验证   
 
+      umeditor: 'modules/umeditor', //编辑器
+
       mobile: '' //移动大模块 | 若当前为开发目录，则为移动模块入口，否则为移动模块集合
     };
 
@@ -183,8 +185,10 @@
       link = doc.createElement('link');
     var head = doc.getElementsByTagName('head')[0];
     if (typeof fn === 'string') cssname = fn;
-    var app = (href.match(/.*\.css.*/) ? href : config.dir + 'css/' + href + '.css');
+    var app = (href.match(/.*\.css.*/) ? (href.substr(0, 4) == "http" ? href : config.dir + href) : config.dir + 'css/' + href + '.css');
     cssname = app.match(/\/([^\/\.]+)\.css/)[1];
+
+
 
     var id = link.id = 'lwj-ui-css-' + cssname,
       timeout = 0;
@@ -457,7 +461,11 @@
         this.isType(key, events[key], _$scope, callback);
       }
     };
+    result.isValue = function($value) {
+      return $value && $value != "" ? false : true;
+    };
     result.isType = function($type, $value, _$scope, callback) {
+      if (this.isValue($value)) return false;
       switch ($type) {
         // 模板
         case "template":
@@ -465,6 +473,7 @@
           break;
           // 需要加载的模块
         case "uses":
+
           isUses = 1;
           $this.uses($value, function() {
             isUses = 2;
@@ -505,17 +514,19 @@
 
     };
     result.isScope = function($key, $value, _$scope) {
+
       switch ($value[0]) {
         case "=":
-          return eval("(" + valAttr(_$scope.element, $value.substr(1)) + ")");
+          var val = valAttr(_$scope.element, $value.substr(1));
+          return eval("(" + (val != "" ? val : "{}") + ")");
           break;
         default:
           return valAttr(_$scope.element, $value);
       }
 
       function valAttr(_$this, _$value) {
-        return _$this.attr(_$value) ? _$this.attr(_$value) :
-          _$this.data(_$value);
+
+        return _$this.attr(_$value) ? _$this.attr(_$value) : _$this.data(_$value);
       };
     };
     $.each($("*[" + dirName + "]"), function(index, val) {

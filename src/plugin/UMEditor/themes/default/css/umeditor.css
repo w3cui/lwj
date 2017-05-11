@@ -27,7 +27,7 @@
     border:0;
     outline:none;
     cursor:text;
-    padding:0 10px 0;
+    //padding:0 10px 0;
     overflow:auto;
     display:block;
     word-wrap:break-word;

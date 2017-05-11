@@ -1,0 +1,26 @@
+<DOCTYPE html>
+<html ng-app = "myApp">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title></title>
+<style>
+  body{padding: 50px 100px;}
+</style>
+<script type="text/javascript"  src="http://cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+
+<script type="text/javascript" src="http://cdn.static.runoob.com/libs/angular.js/1.4.6/angular.min.js"></script>
+<script src="../../release/plugin/UMEditor/umeditor.js"></script>
+<script src="../../release/plugin/UMEditor/umeditor.config.js"></script>
+<script src="../../release/plugin/UMEditor/lang/zh-cn/zh-cn.js"></script>
+<link rel="stylesheet" type="text/css" href="../../release/plugin/UMEditor/themes/default/css/umeditor.css">
+
+<script src="../../release/ng/umeditor.js"></script>
+</head>
+<body ng-controller = "appCtrl" >
+
+	<textarea ui-umeditor data-umeditorconfig = "{{umeditorConfig}}" placeholder = "placeholder" ng-model="value" ></textarea>
+  绑定的数据：{{value}} <br>
+  参数：{{umeditorConfig}}
+</body>
+</html>
