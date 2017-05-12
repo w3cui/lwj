@@ -11,6 +11,11 @@ var del = require('del');
 var gulpif = require('gulp-if');
 var minimist = require('minimist');
 
+var gulpOpen = require('gulp-open');
+var os = require('os');
+var connect = require('gulp-connect');
+var watch = require('gulp-watch');
+
 // var webpack = require('webpack');
 // var webpackConfig = require('./webpack.config.js');
 // var gutil = require('gulp-util');
@@ -21,14 +26,24 @@ var minimist = require('minimist');
 // var es = require('event-stream');
 // var source = require("vinyl-source-stream");
 
-
-
 //获取参数
 var argv = require('minimist')(process.argv.slice(2), {
-  default: {
-    ver: 'all'
+    default: {
+      ver: 'all'
+    }
+  })
+  // host配置
+  ,
+  host = {
+    path: '',
+    port: 3000,
+    html: 'index.html'
   }
-})
+  // 配置open
+  ,
+  browser = os.platform() === 'linux' ? 'Google chrome' : (
+    os.platform() === 'darwin' ? 'Google chrome' : (
+      os.platform() === 'win32' ? 'chrome' : 'firefox'))
 
 //注释
 , note = [
@@ -70,7 +85,7 @@ var argv = require('minimist')(process.argv.slice(2), {
     // var myDevConfig = Object.create(webpackConfig);
     // myDevConfig.output.publicPath = dir;
     // myDevConfig.output.path =  path.join(__dirname, dir);
-    
+
     // var devCompiler = webpack(myDevConfig);
 
     // //引用webpack对js进行操作
@@ -93,7 +108,7 @@ var argv = require('minimist')(process.argv.slice(2), {
       dir = ver ? 'release' : 'build';
 
     return gulp.src(src)
-      .pipe(uglify())      
+      .pipe(uglify())
       //合并输出为app.js
       .pipe(concat('lwj.all.js', {
         newLine: ''
@@ -147,9 +162,36 @@ var argv = require('minimist')(process.argv.slice(2), {
     gulp.src(src).pipe(rename({}))
       .pipe(gulp.dest('./' + dir));
   }
+
+  // 监听变化
+  ,
+  watch: function(ver) {
+    return gulp.watch(['./src/**/*.{js,css}'], function() {
+      for (var key in task) {
+        if (key != "watch" && key != "open") {
+          task[key]('open');
+        }
+      }
+    });
+  }
+
+  // 预览
+  ,
+  open: function(ver) {
+    connect.server({
+      root: host.path,
+      port: host.port,
+      livereload: true
+    });
+    gulp.src('')
+      .pipe(gulpOpen({
+        app: browser,
+        uri: 'http://localhost:3000/dome'
+      }))
+    this.watch();
+  }
+
 };
-
-
 
 
 
@@ -167,17 +209,32 @@ gulp.task('mobile', task.mobile);
 gulp.task('mincss', task.mincss);
 gulp.task('font', task.font);
 gulp.task('mv', task.mv);
+gulp.task('watch', task.watch);
+gulp.task('open', task.open);
 
 //开源版
 gulp.task('default', ['clearRelease'], function() { //命令：gulp
   for (var key in task) {
-    task[key]('open');
+    if (key != "watch" && key != "open") {
+      task[key]('open');
+    }
+  }
+});
+
+// local 预览
+gulp.task('local', function() { //命令：监听
+  for (var key in task) {
+    if (key != "watch") {
+      task[key]('open');
+    }
   }
 });
 
 //完整任务
 gulp.task('all', ['clear'], function() { //命令：gulp all，过滤lwj：gulp all --open
   for (var key in task) {
-    task[key]();
+    if (key != "watch" && key != "open") {
+      task[key]('open');
+    }
   }
 });

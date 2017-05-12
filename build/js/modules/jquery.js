@@ -1,5 +1,5 @@
 /** lwj-v MIT License By  */
- ;/*!
+ /*!
  * jQuery JavaScript Library v1.12.3
  * http://jquery.com/
  *

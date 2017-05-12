@@ -1,5 +1,5 @@
 /** lwj-v MIT License By  */
- ;!(function(win,lwjui){
+ !(function(win,lwjui){
 	lwjui.validate = (function($form){
 		$form.init = "";
 		$form.isDate = "";

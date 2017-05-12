@@ -6,8 +6,7 @@ lwjui.controller('appCtrl', ['$scope', function($scope) {
 	};
 	$scope.value = "内容";
 }])
-
-
+  
 // 富文本编辑框
 lwjui.directive('uiUmeditor', function() {
 	return {

@@ -1,5 +1,5 @@
 /** lwj-v MIT License By  */
- ;! function(win) {
+ ! function(win) {
   "use strict";
   var lwjui = function() {
     this.v = '1.0.0';
@@ -36,6 +36,8 @@
 
       validate: 'modules/validate', //表单验证   
 
+      umeditor: 'modules/umeditor', //编辑器
+
       mobile: '' //移动大模块 | 若当前为开发目录，则为移动模块入口，否则为移动模块集合
     };
 
@@ -44,7 +46,7 @@
   config.timeout = 30; //符合规范的模块请求最长等待秒数
   config.event = {}; //记录模块自定义事件
   config.directive = {}; //记录所有directive指令
-  config.version = (new lwjui()).v =="" ?  (new Date()).getTime() : (new lwjui()).v;
+  config.version = (new lwjui()).v == "" ? (new Date()).getTime() : (new lwjui()).v;
   //定义模块
   lwjui.fn.define = function(deps, callback) {
     var that = this,
@@ -70,7 +72,17 @@
     return that;
   };
 
-  /* 使用特定模块 */
+  /**
+   * 使用特定模块，并依据obj来设置属性，加载成功后执行回调函数callback
+   * @name uses
+   * @grammar lwjui.uses(apps, callback,)
+   * @example
+   * //指定加载到当前document中一个script文件，加载成功后执行function
+   * lwjui.uses( "@name/url",
+   * , function () {
+   *     console.log('加载成功！')
+   * },[]);
+   */
   lwjui.fn.uses = function(apps, callback, exports) {
     var that = this,
       dir = config.dir = config.dir ? config.dir : getPath;
@@ -120,7 +132,7 @@
     var node = doc.createElement('script'),
       url = (
         modules[item] ? (dir + 'js/') : (config.base || '')
-      ) + (that.modules[item] || (item.substr(0, 4)=="http" ? item :  dir + item) ) + ( item.match(/.*\.js.*/) ? "" : '.js' );
+      ) + (that.modules[item] || (item.substr(0, 4) == "http" ? item : dir + item)) + (item.match(/.*\.js.*/) ? "" : '.js');
     node.async = true;
     node.charset = 'utf-8';
     node.src = url + function() {
@@ -174,12 +186,14 @@
       link = doc.createElement('link');
     var head = doc.getElementsByTagName('head')[0];
     if (typeof fn === 'string') cssname = fn;
-    var app =  (href.match(/.*\.css.*/) ? href : config.dir + 'css/' + href + '.css');
+    var app = (href.match(/.*\.css.*/) ? (href.substr(0, 4) == "http" ? href : config.dir + href) : config.dir + 'css/' + href + '.css');
     cssname = app.match(/\/([^\/\.]+)\.css/)[1];
-    
+
+
+
     var id = link.id = 'lwj-ui-css-' + cssname,
       timeout = 0;
-    if(doc.getElementById(id)) return that;
+    if (doc.getElementById(id)) return that;
     link.rel = 'stylesheet';
     link.href = app + function() {
       var version = config.version === true ? (config.v || (new Date()).getTime()) : (config.version || '');
@@ -208,11 +222,11 @@
 
   //css内部加载器
   lwjui.fn.addcss = function(firename, fn, cssname) {
-    firename = typeof firename =="object" ? firename : [firename];
-    for(var key = 0; key < firename.length; key++ ){
+    firename = typeof firename == "object" ? firename : [firename];
+    for (var key = 0; key < firename.length; key++) {
       lwjui.fn.link(firename[key], fn, key);
     }
-    
+
   };
 
   //图片预加载
@@ -393,7 +407,43 @@
     return result;
   };
 
-  // 构建指令逻辑
+  /**
+   * 构建指令逻辑 指令触发于参数过滤
+   * @dirName 
+   * @events => function() {
+   *     return {
+   *       template: "", 模板
+   *       uses: [模块名/相对地址/绝对地址], 处理逻辑
+   *       addcss:[模块名/相对地址/绝对地址], 样式
+   *       scope: {
+   *         string: '文本', 
+   *         object: '=对象',  
+   *       },
+   *       link: function(el) {
+   *         var scope = el.scope;
+   *         var tpl = $(el.template).append("（我是属性值：" + scope.string + ")");
+   *         el.element.append(tpl);
+   *       }
+   *     }
+   *   }
+   * 创建指令 绑定指令逻辑
+   * lwjui.directive('ui-layer', function() {
+   *   return {
+   *     template: "<div ui-attr selecteda='---ui-attr内嵌组件---'>我是第一个组件：</div>",
+   *     uses: ["box"],
+   *     addcss:["lwj"],
+   *     scope: {
+   *       string: 'selecteda',
+   *       object: '=list',
+   *     },
+   *     link: function(el) {
+   *       var scope = el.scope;
+   *       var tpl = $(el.template).append("（我是属性值：" + scope.string + ")");
+   *       el.element.append(tpl);
+   *     }
+   *   };
+   * })
+   */
   lwjui.fn.directive = function(dirName, events) {
     // 记录 注册事件 directive
     config.directive[dirName] = !config.directive[dirName] ? events : config.directive[dirName];
@@ -412,35 +462,40 @@
         this.isType(key, events[key], _$scope, callback);
       }
     };
+    result.isValue = function($value) {
+      return $value && $value != "" ? false : true;
+    };
     result.isType = function($type, $value, _$scope, callback) {
+      if (this.isValue($value)) return false;
       switch ($type) {
         // 模板
         case "template":
           _$scope.template = $value;
           break;
-        // 需要加载的模块
+          // 需要加载的模块
         case "uses":
+
           isUses = 1;
           $this.uses($value, function() {
             isUses = 2;
           });
           break;
-        // 需要加载的css
+          // 需要加载的css
         case "addcss":
           isUses = 1;
-          $this.addcss($value, function(){
+          $this.addcss($value, function() {
             isUses = 2;
           }, $value)
 
           break;
-        // 获取参数
+          // 获取参数
         case "scope":
           _$scope.scope = {};
           for (var key in $value) {
             _$scope.scope[key] = this.isScope(key, $value[key], _$scope);
           }
           break;
-        // 获取参数
+          // 获取参数
         case "link":
           setTimeout(function() {
             if (isUses === 1 || isUses === 2) {
@@ -460,17 +515,19 @@
 
     };
     result.isScope = function($key, $value, _$scope) {
+
       switch ($value[0]) {
         case "=":
-          return eval("(" + valAttr(_$scope.element, $value.substr(1)) + ")");
+          var val = valAttr(_$scope.element, $value.substr(1));
+          return eval("(" + (val != "" ? val : "{}") + ")");
           break;
         default:
           return valAttr(_$scope.element, $value);
       }
 
       function valAttr(_$this, _$value) {
-        return _$this.attr(_$value) ? _$this.attr(_$value) :
-          _$this.data(_$value);
+
+        return _$this.attr(_$value) ? _$this.attr(_$value) : _$this.data(_$value);
       };
     };
     $.each($("*[" + dirName + "]"), function(index, val) {
